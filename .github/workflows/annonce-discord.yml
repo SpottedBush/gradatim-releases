@@ -1,0 +1,46 @@
+# Announces each published release on Gradatim's Discord (.github/annonce/annonce.py says how).
+# Secrets (Settings › Secrets and variables › Actions), typed by Vincent only:
+#   DISCORD_NOTES     the webhook of #notes-de-version
+#   DISCORD_DEMARRER  the webhook of #démarrer
+# Variables (same page, « Variables » tab), not secret:
+#   DEMARRER_MESSAGES  the ids of the two messages of #démarrer, « id1,id2 » (the first run prints them)
+#   SALONS             optional, {"annonces": "<id>", "notes": "<id>", "aide": "<id>", "bugs": "<id>"}
+# A manual run (Actions › Annonce Discord › Run workflow) rewrites #démarrer for a release already published, and
+# posts its notes again only when « notes » is ticked.
+name: Annonce Discord
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "La version à annoncer (v0.3.1)"
+        required: true
+      notes:
+        description: "Reposter aussi les notes dans #notes-de-version"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  annoncer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      # v7.0.1, pinned by its commit
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+      - name: Tests
+        run: python3 -m unittest discover -s .github/annonce -v
+      - name: Annoncer
+        env:
+          DISCORD_NOTES: ${{ secrets.DISCORD_NOTES }}
+          DISCORD_DEMARRER: ${{ secrets.DISCORD_DEMARRER }}
+          DEMARRER_MESSAGES: ${{ vars.DEMARRER_MESSAGES }}
+          SALONS: ${{ vars.SALONS }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 .github/annonce/annonce.py
