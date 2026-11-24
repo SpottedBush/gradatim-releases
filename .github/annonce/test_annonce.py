@@ -119,8 +119,8 @@ class Annonce(unittest.TestCase):
         self.assertIn("0.3.2", notes["content"])
         self.assertEqual([(m, c) for m, c, _, _ in demarrer], [("POST", "/webhooks/demarrer?wait=true")] * 2)
         fr = demarrer[0][2]["content"]
-        self.assertIn("Gradatim-0.3.2-setup.exe", fr)
-        self.assertIn(EMPREINTE, fr)
+        self.assertNotIn("0.3.2", fr)             # #démarrer is fixed (Vincent, 2026-11-24): no version,
+        self.assertNotIn(EMPREINTE, fr)           # no fingerprint, the notes carry it
         self.assertIn(f"<#{SALON_ID}>", fr)       # a channel whose id is known: its mention
         self.assertIn("#notes-de-version", fr)    # the others: their name
         self.assertNotIn("{", fr)
@@ -237,7 +237,8 @@ class Annonce(unittest.TestCase):
         self.assertEqual(len(textes), 2)
         for t in textes:
             self.assertLessEqual(len(t), annonce.MESSAGE_MAX)
-            self.assertIn("A" * 64, t)
+            self.assertNotIn("A" * 64, t)         # fixed: the same text at every release
+            self.assertNotIn("10.10.10", t)
             self.assertNotIn("{", t)
 
     def test_lancement_a_la_main_tag_verifie(self):

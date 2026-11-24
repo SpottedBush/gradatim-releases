@@ -6,8 +6,8 @@ At each published release:
 2. it refuses to announce anything when that fingerprint is not in the release's notes: the notes and #démarrer are
    the two places a tester checks it, and neither may show a fingerprint that is not the installer's;
 3. it posts the notes in #notes-de-version (secret DISCORD_NOTES, the channel's webhook);
-4. it rewrites the messages of #démarrer (secret DISCORD_DEMARRER) from demarrer.json, with the installer's name and
-   its fingerprint. A webhook only edits its own messages: the first run posts them and prints their ids, which
+4. it rewrites the messages of #démarrer (secret DISCORD_DEMARRER) from demarrer.json ({installeur} and {empreinte}
+   would be the installer's name and fingerprint; since 2026-11-24 the text is fixed and has neither). A webhook only edits its own messages: the first run posts them and prints their ids, which
    Vincent puts in the variable DEMARRER_MESSAGES (« id1,id2 »); every run after that edits them.
 
 The variable SALONS ({"annonces": "<id>", ...}, optional) turns {#cle} into the channel's mention; without an id the
